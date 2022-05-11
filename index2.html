@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="preload"
+      as="style"
+      onload="this.rel = 'stylesheet'"
+      href="https://fonts.googleapis.com/css?family=Lobster|Rampart One|Patrick Hand|Akaya Telivigala|Fredoka"
+    />
+    <link
+      rel="preload"
+      as="style"
+      onload="this.rel = 'stylesheet'"
+      type="text/css"
+      href="index2.css"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/favicon.ico?v=1644733950223"
+    />
+    <title>Good music!</title>
+    <meta
+      charset="utf-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+  </head>
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="detectmobilebrowser.js"></script>
+
+    <div id="fullscreenVideo">
+      <video autoplay loop id="myVideo" preload onloadstart="this.volume=0.4">
+        <source src="" id="src" />
+      </video>
+      <div style="border-radius: 50px" id="snackbar">
+        You pressed wrong key!
+      </div>
+      <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+      <p
+        id="tut-volume"
+        class="rainbow"
+        style="
+          position: absolute;
+          margin-left: 615px;
+          color: white;
+          border: 1px solid white;
+          padding: 5px;
+        "
+      >
+        Change volume here
+      </p>
+      <br /><br /><br />
+      <div id="controls">
+        <input
+          onmouseenter="text1()"
+          onmouseleave="text2()"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value="40"
+          oninput="SetVolume(this.value)"
+          onchange="SetVolume(this.value)"
+          id="vol-control"
+          style="cursor: ew-resize; margin-left: 55vh"
+        /><br />
+        <div style="margin-top: 13px">
+          <span id="curtimetext" style="color: orange; margin-left: 58vh"
+            >00:00</span
+          ><input
+            style="margin: 0 10px 0 10px"
+            id="seekslider"
+            type="range"
+            min="0"
+            max="100"
+            value="0"
+            step="1"
+          /><span id="durtimetext" style="color: deeppink">00:00</span>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Keyboard shortcuts</h2>
+        </div>
+        <div class="modal-body">
+          <p>
+            [Space] or scroll ROLL button: Play/pause (In fullscreen: Scroll
+            anywhere)
+          </p>
+          <p>[M]: Mute/unmute (In fullscreen: Right click anywhere)</p>
+          <p>
+            [F]: Enter/exit fullscreen video (You can use right click to enter
+            fullscreen)
+          </p>
+          <p>[Left/Right Arrow Key]: Backward/Forward video (5 seconds)</p>
+        </div>
+        <div class="modal-footer">
+          <p
+            id="reloadBtn"
+            class="centerButton"
+            onclick="home()"
+            onmouseenter="c1()"
+            onmouseleave="c2()"
+            style="text-align: center; cursor: pointer"
+          >
+            <b style="color: black">Reload this player</b>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <br /><br />
+      <h1 class="rainbow" style="text-align: center">
+        <b style="cursor: default">Choose any video (or audio)</b>
+      </h1>
+      <h3 style="opacity: 50%; text-align: center">
+        Blur Mode (Made by
+        <b
+          class="blink"
+          style="color: pink; font-family: Segoe Script; cursor: pointer"
+          onclick="ytchannel()"
+          >Mr884</b
+        >)
+      </h3>
+      <p style="text-align: center">
+        <i
+          id="title"
+          onmouseenter="background1()"
+          onmouseleave="background2()"
+          onclick="catviz()"
+          style="cursor: pointer"
+          >A simple web player with many interactive buttons and actions</i
+        >
+      </p>
+      <br /><br /><br /><br />
+      <button
+        id="myBtn"
+        data-tooltip="Scroll this"
+        data-tooltip-location="right"
+        onmousewheel="settime()"
+      >
+        <span><b style="color: black">ROLL</b></span>
+      </button>
+      <progress id="progress" max="100" value="0">Progress</progress>
+      <span id="curtimetextbg">00:00</span> /
+      <span id="durtimetextbg">00:00</span>
+      <p>
+        Click
+        <b
+          id="hint"
+          style="color: pink; font-family: Segoe Print"
+          onclick="showname()"
+          onmouseenter="sansclick()"
+        >
+          ROLL
+        </b>
+        to see all keyboard shortcuts
+      </p>
+      <br /><br /><br /><br /><br />
+      <form style="text-align: center">
+        <label for="upload" class="custom-file-upload">
+          <i class="fa fa-cloud-upload"></i> Choose file...
+        </label>
+        <input type="file" id="upload" style="display: none" />
+      </form>
+      <br />
+      <br />
+      <main>
+        <div id="clock" onload="currentTime()" class="submit-feedback"></div>
+        <div id="time"></div>
+      </main>
+    </div>
+
+    <script>
+      var video = document.getElementById("myVideo");
+      var btn = document.getElementById("myBtn");
+      var badtime = document.getElementById("reloadBtn");
+      var unit = "s";
+      var x = document.getElementById("snackbar");
+      var elem = document.getElementById("fullscreenVideo");
+      var seekslider = document.getElementById("seekslider");
+      var curtimetext = document.getElementById("curtimetext");
+      var durtimetext = document.getElementById("durtimetext");
+      var sanssrc = document.getElementById("myVideo");
+      var name = document.getElementById("upload");
+      var controls = document.getElementById("controls");
+      function settime() {
+        if (video.played) console.log(video.currentTime);
+        setInterval(function () {
+          console.log(video.currentTime);
+          document.getElementById("time").innerHTML =
+            Math.round(video.currentTime) + unit;
+        }, 1000);
+      }
+      const progress = document.getElementById("progress");
+      function progressLoop() {
+        setInterval(function () {
+          progress.value = Math.round(
+            (myVideo.currentTime / myVideo.duration) * 100
+          );
+        });
+      }
+
+      progressLoop();
+
+      function playPageTitle() {
+        newPlayTitle = "Playing!";
+        document.title = newPlayTitle;
+      }
+      function pausePageTitle() {
+        newPauseTitle = "Paused!";
+        document.title = newPauseTitle;
+      }
+      async function changePageTitle() {
+        var name = document.getElementById("upload");
+        await sleep(1000);
+        newPageTitle = name.files.item(0).name;
+        document.title = newPageTitle;
+      }
+
+      function musicTitle() {
+        var name = document.getElementById("upload");
+        if (src != "") {
+          musicTitle = name.files.item(0).name;
+          document.title = musicTitle;
+        }
+      }
+
+      function home() {
+        location.reload(true);
+      }
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+      function bpControl() {
+        var name = document.getElementById("upload");
+        if (video.paused) {
+          video.play();
+          btn.innerHTML = "ROLL (⏸️)";
+          playPageTitle();
+          changePageTitle();
+        } else {
+          video.pause();
+          btn.innerHTML = "ROLL (▶)";
+          pausePageTitle();
+          changePageTitle();
+        }
+      }
+      function catviz() {
+        if (video.played) video.pause();
+        btn.innerHTML = "ROLL (▶)";
+        window.open(
+          "https://drive.google.com/file/d/14aIYGZ_yEeiVws-0PDB7G5Qs-nWIiA-J/view?usp=sharing"
+        );
+      }
+      function sansclick() {}
+      function ytchannel() {
+        window.open("https://www.youtube.com/channel/UC8Hhy9h1CJiRRajHca1BWJQ");
+      }
+      function currentTime() {
+        let date = new Date();
+        let hh = date.getHours();
+        let mm = date.getMinutes();
+        let ss = date.getSeconds();
+        let session = "AM";
+
+        if (hh > 12) {
+          session = "PM";
+        }
+
+        hh = hh < 10 ? "0" + hh : hh;
+        mm = mm < 10 ? "0" + mm : mm;
+        ss = ss < 10 ? "0" + ss : ss;
+
+        let time = hh + ":" + mm + ":" + ss + " " + session;
+
+        document.getElementById("clock").innerText = time;
+        let t = setTimeout(function () {
+          currentTime();
+        }, 1000);
+      }
+
+      function openFullscreen() {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          /* Safari */
+          elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          /* IE11 */
+          elem.msRequestFullscreen();
+        }
+        document.getElementById("vol-control").style.display = "";
+        document.getElementById("curtimetext").style.display = "";
+        document.getElementById("durtimetext").style.display = "";
+        document.getElementById("seekslider").style.display = "";
+      }
+      /* Close fullscreen */
+      function closeFullscreen() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          /* Safari */
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          /* IE11 */
+          document.msExitFullscreen();
+        }
+        document.getElementById("vol-control").style.display = "none";
+        document.getElementById("curtimetext").style.display = "none";
+        document.getElementById("durtimetext").style.display = "none";
+        document.getElementById("seekslider").style.display = "none";
+        document.getElementById("tut-volume").style.display = "none";
+      }
+
+      function vidSeek() {
+        var seekto = video.duration * (seekslider.value / 100);
+        video.currentTime = seekto;
+      }
+      function seektimeupdate() {
+        var nt = video.currentTime * (100 / video.duration);
+        seekslider.value = nt;
+        var curmins = Math.floor(video.currentTime / 60);
+        var cursecs = Math.floor(video.currentTime - curmins * 60);
+        var durmins = Math.floor(video.duration / 60);
+        var dursecs = Math.floor(video.duration - durmins * 60);
+        if (cursecs < 10) {
+          cursecs = "0" + cursecs;
+        }
+        if (dursecs < 10) {
+          dursecs = "0" + dursecs;
+        }
+        if (curmins < 10) {
+          curmins = "0" + curmins;
+        }
+        if (durmins < 10) {
+          durmins = "0" + durmins;
+        }
+        curtimetext.innerHTML = curmins + ":" + cursecs;
+        durtimetext.innerHTML = durmins + ":" + dursecs;
+        curtimetextbg.innerHTML = curmins + ":" + cursecs;
+        durtimetextbg.innerHTML = durmins + ":" + dursecs;
+      }
+      function showname() {
+        var name = document.getElementById("upload");
+        alert("Selected file: " + name.files.item(0).name);
+      }
+
+      function controls1() {
+        controls.style.opacity = 1;
+      }
+      function controls2() {
+        controls.style.opacity = 0;
+      }
+
+      function c1() {
+        $(".modal-footer").css({ backgroundColor: "#5cb85c" });
+      }
+      function c2() {
+        $(".modal-footer").css({ backgroundColor: "#FFC0CB" });
+      }
+
+      function background1() {
+        document.getElementById("myVideo").style.backgroundImage =
+          "url('https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/catviz.png?v=1647951517049')"; // specify the image path here
+        document.getElementById("hint").innerText = "MEGALOVANIA";
+        document.getElementById("hint").style.color = "aqua";
+        document.getElementById("title").innerText =
+          "Click here to open catviz.mp4 in Google Drive";
+        document.getElementById("title").style.color = "aqua";
+        btn.innerHTML = "MEGALOVANIA";
+        btn.style.color = "aqua";
+      }
+      function background2() {
+        document.getElementById("myVideo").style.backgroundImage =
+          "url('https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/7HHu.gif?v=1646408754070')"; // specify the image path here
+        document.getElementById("hint").innerText = "ROLL";
+        document.getElementById("hint").style.color = "pink";
+        document.getElementById("title").innerText =
+          "A simple web player with many interactive buttons and actions";
+        document.getElementById("title").style.color = "white";
+        btn.innerHTML = "ROLL";
+        btn.style.color = "black";
+      }
+      function text1() {
+        document.getElementById("tut-volume").style.display = "unset";
+      }
+      function text2() {
+        document.getElementById("tut-volume").style.display = "none";
+      }
+
+      function detectmobilebrowser() {
+        var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          alert("Moblie");
+        }
+      }
+
+      function SetVolume(val) {
+        video.volume = val / 100;
+        vlume = video.volume * 100;
+        vume = vlume.toFixed();
+        document.getElementById("tut-volume").innerHTML =
+          "Volume: " + vume + " /" + " 100";
+      }
+
+      currentTime();
+      // Add event listeners
+      seekslider.addEventListener("change", vidSeek, false);
+      video.addEventListener("timeupdate", seektimeupdate, false);
+      window.addEventListener(
+        "keyup",
+        function (e) {
+          if (e.keyCode == 70) {
+            if (
+              window.fullScreen ||
+              (window.innerWidth == screen.width &&
+                window.innerHeight == screen.height)
+            ) {
+              closeFullscreen();
+            } else {
+              openFullscreen();
+            }
+          }
+        },
+        false
+      );
+      // Try using right-click on the preview page. This script disables that functionality.
+      window.addEventListener(
+        "contextmenu",
+        function (e) {
+          openFullscreen();
+          e.preventDefault();
+        },
+        false
+      );
+      function handleFiles(event) {
+        var files = event.target.files;
+        $("#src").attr("src", URL.createObjectURL(files[0]));
+        document.getElementById("myVideo").load();
+      }
+
+      document
+        .getElementById("upload")
+        .addEventListener("change", handleFiles, false);
+      document
+        .getElementById("upload")
+        .addEventListener("change", musicTitle, false);
+      /* The flag that determines whether the wheel event is supported. */
+      var supportsWheel = false;
+
+      /* The function that will run when the events are triggered. */
+      function DoSomething(e) {
+        /* Check whether the wheel event is supported. */
+        if (e.type == "wheel") supportsWheel = true;
+        else if (supportsWheel) return;
+
+        /* Determine the direction of the scroll (< 0 → up, > 0 → down). */
+        var delta = (e.deltaY || -e.wheelDelta || e.detail) >> 10 || 1;
+
+        /* ... */
+        console.log(delta);
+      }
+
+      /* Add the event listeners for each event. */
+      btn.addEventListener("wheel", bpControl);
+      btn.addEventListener("mousewheel", bpControl);
+      btn.addEventListener("DOMMouseScroll", bpControl);
+      elem.addEventListener("wheel", bpControl);
+      elem.addEventListener("mousewheel", bpControl);
+      elem.addEventListener("DOMMouseScroll", bpControl);
+
+      window.addEventListener(
+        "keydown",
+        function (e) {
+          if (e.keyCode == 32) {
+            bpControl();
+          }
+          if (e.keyCode == 77) {
+            if (video.muted == false) {
+              video.muted = true;
+            } else {
+              video.muted = false;
+            }
+          }
+        },
+        false
+      );
+      // Visualizer
+      window.onload = function () {
+        var file = document.getElementById("upload");
+        var audio = document.getElementById("myVideo");
+
+        file.onchange = function () {
+          var files = this.files;
+          audio.src = URL.createObjectURL(files[0]);
+          audio.load();
+          audio.play();
+          var context = new AudioContext();
+          var src = context.createMediaElementSource(audio);
+          var analyser = context.createAnalyser();
+
+          var canvas = document.getElementById("canvas");
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          var ctx = canvas.getContext("2d");
+
+          src.connect(analyser);
+          analyser.connect(context.destination);
+
+          analyser.fftSize = 256;
+
+          var bufferLength = analyser.frequencyBinCount;
+          console.log(bufferLength);
+
+          var dataArray = new Uint8Array(bufferLength);
+
+          var WIDTH = canvas.width;
+          var HEIGHT = canvas.height;
+
+          var barWidth = (WIDTH / bufferLength) * 2.5;
+          var barHeight;
+          var x = 0;
+
+          function renderFrame() {
+            requestAnimationFrame(renderFrame);
+
+            x = 0;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+            for (var i = 0; i < bufferLength; i++) {
+              barHeight = dataArray[i];
+
+              var r = barHeight + 25 * (i / bufferLength);
+              var g = 250 * (i / bufferLength);
+              var b = 50;
+
+              ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+              ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+
+              x += barWidth + 1;
+            }
+          }
+
+          audio.play();
+          renderFrame();
+        };
+      };
+
+      var vids = $("video");
+      $.each(vids, function () {
+        this.controls = false;
+      });
+      //Loop though all Video tags and set Controls as false
+
+      // Hide controls
+      // Cursor
+      elem.addEventListener("mousemove", (e) => {
+        const timer = elem.getAttribute("timer");
+        if (timer) {
+          clearTimeout(timer);
+          elem.setAttribute("timer", "");
+        }
+        const t = setTimeout(() => {
+          elem.setAttribute("timer", "");
+          elem.classList.add("hide-cursor");
+        }, 1500);
+        elem.setAttribute("timer", t);
+
+        elem.classList.remove("hide-cursor");
+      });
+      // Controls
+      elem.addEventListener("mousemove", (e) => {
+        const timer = controls.getAttribute("timer");
+        if (timer) {
+          clearTimeout(timer);
+          controls.setAttribute("timer", "");
+        }
+        const t = setTimeout(() => {
+          controls.setAttribute("timer", "");
+          controls.classList.add("hide-controls");
+        }, 1500);
+        controls.setAttribute("timer", t);
+
+        controls.classList.remove("hide-controls");
+      });
+
+      const secondsToSkip = 5;
+      document.onkeydown = (event) => {
+        if (event.keyCode == 37) {
+          video.currentTime = video.currentTime - secondsToSkip;
+        }
+        if (event.keyCode == 39) {
+          video.currentTime = video.currentTime + secondsToSkip;
+        }
+      };
+
+      // Get the modal
+      var modal = document.getElementById("myModal");
+
+      // Get the button that opens the modal
+      var btn = document.getElementById("myBtn");
+
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+
+      // When the user clicks the button, open the modal
+      btn.onclick = function () {
+        modal.style.display = "block";
+      };
+
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
+    <script>
+      $(document).ready(function () {
+        if ($("video").prop("muted", false)) {
+        }
+
+        $("#clock").click(function () {
+          if ($("video").prop("muted")) {
+            $("video").prop("muted", false);
+          } else {
+            $("video").prop("muted", true);
+          }
+        });
+      });
+
+      $("#fullscreenVideo").contextmenu(function () {
+        if ($("video").prop("muted")) {
+          $("video").prop("muted", false);
+        } else {
+          $("video").prop("muted", true);
+        }
+      });
+
+      $("#upload").change(function () {
+        var i = $(this).prev("label").clone();
+        var file = $("#upload")[0].files[0].name;
+        $(this).prev("label").text(file);
+      });
+    </script>
+  </body>
+</html>
