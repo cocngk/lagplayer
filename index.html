@@ -44,6 +44,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="duDialog.js"></script>
     <script src="detectmobilebrowser.js"></script>
+    <div id="black">
+      
+    </div>
     <div id="cat">
       <div id="cattext">
         <img
@@ -71,6 +74,8 @@
       <video id="vid" muted preload><source src="" /></video>
     </div>
     <script>
+      $("#black").hide();
+      
       var video = document.getElementById("vid");
       container.onclick = function () {
         tut1();
@@ -101,6 +106,8 @@
           "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/fancy.mp4?v=1648133549164",
           "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Lagtrain%20more%20like_1080p.mp4?v=1648916154162",
           "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Dance%20The%20Night%20Away%20vs%20Crab%20Rave%20TWICE%20x%20Noisestorm%20Mashup_1080p.mp4?v=1648920509150",
+          "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Guys%20look%20a%20birdie%20original_1080p.mp4?v=1652707300327",
+          "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/Underbase-%20Fallen%20Down.mp4?v=1655025807625",
         ];
         const randomNumber = Math.floor(Math.random() * videos.length);
         const currentVideo = videos[randomNumber];
@@ -130,9 +137,19 @@
             "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/favicon.ico?v=1648377363086"
           );
           if (video.muted == true) {
+            $("#black").show();
             video.src =
               "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Rick%20Astley%20%20Never%20Gonna%20Give%20You%20Up%20Official%20Music%20Video_1080p.mp4?v=1648298123755";
             video.muted = false;
+            video.addEventListener('loadeddata', (e) => {
+   //Video should now be loaded but we can add a second check
+
+   if(video.readyState >= 3){
+       //your code goes here
+     $("#black").hide();
+   }
+
+});
             document.getElementById("countdown").innerHTML =
               "Rick needs <span>XX</span> seconds to sing.";
             document.getElementById("text1").innerHTML = "Oops!";
@@ -219,9 +236,20 @@
           !document.mozFullScreen &&
           !document.msFullscreenElement
         ) {
+          $("#black").show();
           video.src =
             "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Rick%20Astley%20%20Never%20Gonna%20Give%20You%20Up%20Official%20Music%20Video_1080p.mp4?v=1648298123755";
-          video.play();
+          video.addEventListener('loadeddata', (e) => {
+   //Video should now be loaded but we can add a second check
+
+   if(video.readyState >= 3){
+       //your code goes here
+     $("#black").hide();
+     video.play()
+   }
+
+});
+          // video.play();
           document.getElementById("countdown").innerHTML =
             "Rick needs <span>XX</span> seconds to sing.";
           document.getElementById("text1").innerHTML = "Oops!";

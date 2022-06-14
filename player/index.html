@@ -12,6 +12,13 @@
       as="style"
       onload="this.rel = 'stylesheet'"
       type="text/css"
+      href="index.css"
+    />
+    <link
+      rel="preload"
+      as="style"
+      onload="this.rel = 'stylesheet'"
+      type="text/css"
       href="index2.css"
     />
     <link
@@ -25,22 +32,35 @@
       onload="this.rel = 'stylesheet'"
       href="https://vjs.zencdn.net/7.18.1/video-js.css"
     />
-    <title>Good music!</title>
+    <title>LAGPlayer - Made by Glitch</title>
+    <meta name="description" content="Play your video or music without app." />
+    <meta name="keywords" content="LAGplayer" />
+    <meta name="author" content="Mr884" />
     <meta
       charset="utf-8"
       name="viewport"
       content="width=device-width, initial-scale=1"
     />
-    <meta name="google-site-verification" content="6K5vSJGMSGYhYHwer-wJCyIwjNlHfT_60uNAXGt0faY" />
+    <meta
+      name="google-site-verification"
+      content="6K5vSJGMSGYhYHwer-wJCyIwjNlHfT_60uNAXGt0faY"
+    />
   </head>
   <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
     <script src="detectmobilebrowser.js"></script>
     <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
+    <script type="module" src="https://unpkg.com/media-chrome@0.6"></script>
     <script
       src="https://kit.fontawesome.com/f919d403a5.js"
       crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.js"
+      integrity="sha512-dMiBqqEV5i3KqpAdsgQSSZ72DnNib7otY0X+b/Tnn1EmLym1dxuZ19csdZqBnfDniKd9bmNtzStQzuMrIa5Ngw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     ></script>
 
     <div id="loading">
@@ -53,14 +73,7 @@
     </div>
 
     <div id="fullscreenVideo">
-      <video
-        autoplay
-        loop
-        id="myVideo"
-        preload="auto"
-        onloadeddata="set40Volume()"
-        class="video-js"
-      >
+      <video autoplay loop id="myVideo" preload="auto" class="video-js">
         <source src="" id="src" />
       </video>
       <div class="menu">
@@ -87,7 +100,7 @@
           class="rainbow"
           style="color: white; padding: 5px; font-family: Segoe UI"
         >
-          <b>Volume: 40 / 100</b>
+          <b>Volume: 100 / 100</b>
         </p>
       </div>
       <div id="controls">
@@ -109,7 +122,7 @@
             min="0"
             max="100"
             step="1"
-            value="40"
+            value="100"
             oninput="SetVolume(this.value)"
             onchange="SetVolume(this.value)"
             id="vol-control"
@@ -223,10 +236,7 @@
           >)
         </h3>
         <p style="text-align: center">
-          <i
-            id="title"
-            onclick="catviz()"
-            style="cursor: pointer"
+          <i id="title" onclick="catviz()" style="cursor: pointer"
             >A simple web player with many interactive buttons and actions</i
           >
         </p>
@@ -411,6 +421,7 @@
           "Enter your url - Don't support Youtube links",
           "amogus"
         );
+        var haveSrc = src.src === ""
         $("#src").attr("src", boxurl);
         if (boxurl === null && src.src === "") {
           alert("Ok!");
@@ -432,8 +443,8 @@
           document.title = "YOU SUS. NOW RELOAD THIS PAGE";
           return;
         } else if (src.src !== "") {
-        alert("Bad feature");
-        return;
+          alert("Developing...");
+          return;
         }
       }
 
@@ -658,10 +669,16 @@
           document.getElementById("tut-volume").innerHTML = "<b>Muted!</b>";
         }
       }
-      
-      function set40Volume() {
-    video.volume = 0.4; //Changed this to 0.5 or 50% volume since the function is called Set Half Volume ;)
-}
+
+      function setFullVolume() {
+        video.volume = 1; //Changed this to 0.5 or 50% volume since the function is called Set Half Volume ;)
+      }
+
+      function clrMemory() {
+        var videoElement = document.getElementById("myVideo");
+        videoElement.pause();
+        document.getElementById("src").removeAttribute("src"); // empty source
+      }
 
       currentTime();
       // Add event listeners
@@ -721,8 +738,13 @@
         var files = event.target.files;
         $("#src").attr("src", URL.createObjectURL(files[0]));
         document.getElementById("myVideo").load();
-        document.getElementById("vol-control").value = 40;
-        document.getElementById("tut-volume").innerHTML = "<b>Volume: 40 / 100</b>"
+      }
+      
+      function firefoxLockFile() {
+        if (navigator.userAgent.indexOf("Firefox") !== -1) {
+          $("#upload").css("pointer-events", "none");
+          $("#upload").css("cursor", "not-allowed")
+        }
       }
 
       document
@@ -734,6 +756,9 @@
       document
         .getElementById("upload")
         .addEventListener("change", showname, false);
+      document
+        .getElementById("upload")
+        .addEventListener("change", clrMemory, false);
       /* The flag that determines whether the wheel event is supported. */
       var supportsWheel = false;
 
@@ -840,6 +865,83 @@
           renderFrame();
         };
       };
+
+      // Normalize audio
+      var audioCtx = new AudioContext();
+
+      // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_specification
+      // TODO: do the loudness filtering (Butterworth, Yulewalk) IIR filters
+
+      function normalizedAudioElement() {
+        var audioElem = document.getElementById("src");
+        var src = audioCtx.createMediaElementSource(audioElem);
+        var gainNode = audioCtx.createGain();
+        gainNode.gain.value = 1.0;
+
+        audioElem.addEventListener(
+          "play",
+          function () {
+            src.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+          },
+          true
+        );
+        audioElem.addEventListener(
+          "pause",
+          function () {
+            // disconnect the nodes on pause, otherwise all nodes always run
+            src.disconnect(gainNode);
+            gainNode.disconnect(audioCtx.destination);
+          },
+          true
+        );
+        fetch(audioElem)
+          .then(function (res) {
+            return res.arrayBuffer();
+          })
+          .then(function (buf) {
+            return audioCtx.decodeAudioData(buf);
+          })
+          .then(function (decodedData) {
+            var decodedBuffer = decodedData.getChannelData(0);
+            var sliceLen = Math.floor(decodedData.sampleRate * 0.05);
+            var averages = [];
+            var sum = 0.0;
+            for (var i = 0; i < decodedBuffer.length; i++) {
+              sum += decodedBuffer[i] ** 2;
+              if (i % sliceLen === 0) {
+                sum = Math.sqrt(sum / sliceLen);
+                averages.push(sum);
+                sum = 0;
+              }
+            }
+            // Ascending sort of the averages array
+            averages.sort(function (a, b) {
+              return a - b;
+            });
+            // Take the average at the 95th percentile
+            var a = averages[Math.floor(averages.length * 0.95)];
+
+            var gain = 1.0 / a;
+            // Perform some clamping
+            // gain = Math.max(gain, 0.02);
+            // gain = Math.min(gain, 100.0);
+
+            // ReplayGain uses pink noise for this one one but we just take
+            // some arbitrary value... we're no standard
+            // Important is only that we don't output on levels
+            // too different from other websites
+            gain = gain / 10.0;
+            console.log("gain determined", name, a, gain);
+            gainNode.gain.value = gain;
+            var gainTextElem = document.getElementById("myVideo");
+            gainTextElem.textContent = gain.toPrecision(4);
+          });
+      }
+
+      document
+        .getElementById("upload")
+        .addEventListener("change", normalizedAudioElement, false);
 
       // Mobile user
       if (window.innerHeight > window.innerWidth) {
