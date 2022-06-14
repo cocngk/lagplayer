@@ -1,0 +1,187 @@
+html, body {margin: 0; height: 100%; overflow: hidden; overflow-x: hidden;}
+body {
+  background-image: url("https://cdn.glitch.global/816743fa-38ac-4a3f-88f1-2b1d2ba55aa9/7HHu.gif?v=1649350345092");
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+}
+
+#bgimage {
+  background-image: url("https://cdn.glitch.global/816743fa-38ac-4a3f-88f1-2b1d2ba55aa9/7HHu.gif?v=1649350345092");
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+  margin: 0; height: 100%;
+  background-color: #ccc;
+}
+
+#player {
+  border-radius: 15px;
+  position:fixed;
+    top: 50%;
+    left: 50%;
+    width:42vw;
+    height:30vw;
+    margin-top: -15vw; /*set to a negative number 1/2 of your height*/
+    margin-left: -21vw; /*set to a negative number 1/2 of your width*/
+  pointer-events: none
+}
+
+svg {
+  position: absolute;
+  top: 0;
+  text-align: center;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+svg:hover {
+  opacity: 0.5;
+}
+#lite {
+  position: absolute;
+  z-index: 2;
+  bottom: 2vw;
+  text-align: center;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#ytnewvid {
+  border: none;
+  opacity: 1;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  text-align: center;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+#ytnewvid:hover {
+  background-color: red;
+}
+#lagplayer {
+  border: none;
+  opacity: 1;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  text-align: center;
+  left: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+#lagplayer:hover {
+  background-color: pink;
+}
+
+
+
+input {
+  text-align: center;
+  width: 60px;
+}
+
+input:focus, input:valid {
+  box-shadow: none;
+  outline: none;
+  background-position: 0 0;
+}
+
+
+::placeholder {
+  text-align: center;
+  font-family: "Raleway", sans-serif
+}
+
+#loading {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0.7;
+  background-color: #fff;
+  z-index: 99;
+}
+
+#loading-image {
+  z-index: 100;
+}
+
+#loading-text {
+  z-index: 100;
+  font-family: "Space Grotesk", sans-serif;
+}
+.progress-container {
+  width: 640px;
+  height: 30px;
+  background-color: gray;
+  margin: auto;
+/*   display: none; */
+}
+
+.progress {
+  width: 0%;
+  height: 100%;
+  background-color: green;
+}
+
+#progress {
+  position: fixed;
+  z-index: 2147483647;
+  top: 0;
+  left: 0px;
+  width: 0%;
+  height: 2px;
+  background: #0088CC;
+  -moz-border-radius: 1px;
+  -webkit-border-radius: 1px;
+  border-radius: 1px;
+  -moz-transition: width 500ms ease-out, opacity 400ms linear;
+  -ms-transition: width 500ms ease-out, opacity 400ms linear;
+  -o-transition: width 500ms ease-out, opacity 400ms linear;
+  -webkit-transition: width 500ms ease-out, opacity 400ms linear;
+  transition: width 500ms ease-out, opacity 400ms linear;
+}
+
+#progress dd, #progress dt {
+  position: absolute;
+  top: 0;
+  height: 2px;
+  -moz-box-shadow: #0088CC 1px 0 6px 1px;
+  -ms-box-shadow: #0088CC 1px 0 6px 1px;
+  -webkit-box-shadow: #0088CC 1px 0 6px 1px;
+  box-shadow: #0088CC 1px 0 6px 1px;
+  -moz-border-radius: 100%;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+}
+
+#progress dt {
+  opacity: .6;
+  width: 180px;
+  right: -80px;
+  clip: rect(-6px, 90px, 14px, -6px);
+}
+
+#progress dd {
+  opacity: .6;
+  width: 20px;
+  right: 0;
+  clip: rect(-6px, 22px, 14px, 10px);
+}
