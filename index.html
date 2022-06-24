@@ -108,6 +108,7 @@
           "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Dance%20The%20Night%20Away%20vs%20Crab%20Rave%20TWICE%20x%20Noisestorm%20Mashup_1080p.mp4?v=1648920509150",
           "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Guys%20look%20a%20birdie%20original_1080p.mp4?v=1652707300327",
           "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/Underbase-%20Fallen%20Down.mp4?v=1655025807625",
+          "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/Cristiano%20Ronaldo%20drinking%20meme%20HD%20(full%20screen).mp4?v=1655559268288"
         ];
         const randomNumber = Math.floor(Math.random() * videos.length);
         const currentVideo = videos[randomNumber];
@@ -147,6 +148,7 @@
    if(video.readyState >= 3){
        //your code goes here
      $("#black").hide();
+     document.title = "Get rickrolled haha";
    }
 
 });
@@ -155,8 +157,7 @@
             document.getElementById("text1").innerHTML = "Oops!";
             document.getElementById("text2").innerHTML = "Oh no!";
             document.getElementById("or").innerHTML = "U GOT RICKROLLED :(";
-            document.getElementById("start").style.display = "none";
-            document.title = "Get rickrolled haha";
+            document.getElementById("start").style.display = "none";          
             document.getElementById("overlay").style.display = "block";
             document.getElementById("cat").style.display = "none";
             video.style.opacity = 1;
@@ -223,7 +224,7 @@
           }
         }
       }
-      $("video").prop("volume", 0.4);
+      $("video").prop("volume", 0.5);
       if (document.addEventListener) {
         document.addEventListener("fullscreenchange", exitHandler, false);
         document.addEventListener("mozfullscreenchange", exitHandler, false);
@@ -245,7 +246,8 @@
    if(video.readyState >= 3){
        //your code goes here
      $("#black").hide();
-     video.play()
+     video.play();
+     document.title = "Get rickrolled haha";
    }
 
 });
@@ -255,8 +257,7 @@
           document.getElementById("text1").innerHTML = "Oops!";
           document.getElementById("text2").innerHTML = "Oh no!";
           document.getElementById("or").innerHTML = "U GOT RICKROLLED :(";
-          document.getElementById("start").style.display = "none";
-          document.title = "Get rickrolled haha";
+          document.getElementById("start").style.display = "none";       
           $("#favicon").attr(
             "href",
             "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/favicon.ico?v=1648377363086"

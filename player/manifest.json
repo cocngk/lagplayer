@@ -1,0 +1,22 @@
+{
+  "name": "LAGPlayer",
+  "short_name": "LAGPlayer",
+  "description": "A simple web player",
+  "icons": [
+    {
+      "sizes": "192x192",
+      "type": "image/png",
+      "src": "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/PWAicon-192x192.png?v=1655397956206"
+    },
+    {
+      "sizes": "512x512",
+      "type": "image/png",
+      "src": "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/PWAicon-512x512.png?v=1655397956473"
+    }
+  ],
+  "display": "standalone",
+  "background_color": "pink",
+  "theme_color": "pink",
+  "start_url": "/player/",
+  "scope": "."
+}
