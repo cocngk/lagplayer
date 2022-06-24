@@ -1,26 +1,59 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-MK7JB92");
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <script>
+      // This is just to force HTTPS (can't do it statically on glitch)
+      if (location.protocol == "http:") location.protocol = "https:";
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/player/sw.js")
+          .then((reg) => console.log("Service Worker registered", reg))
+          .catch((err) =>
+            console.error("Service Worker **not** registered", err)
+          );
+      } else {
+        console.warn("Service Worker not supported in this browser");
+      }
+    </script>
+
+    <base href="/" />
+    <link rel="manifest" href="./player/manifest.json" />
+    <link rel="canonical" href="https://lagplayer.glitch.me/player" />
     <link
       rel="preload"
       as="style"
       onload="this.rel = 'stylesheet'"
-      href="https://fonts.googleapis.com/css?family=Lobster|Rampart One|Patrick Hand|Akaya Telivigala|Fredoka|Space Grotesk"
+      href="https://fonts.googleapis.com/css?family=Montserrat|Rampart One|Patrick Hand|Akaya Telivigala|Fredoka|Space Grotesk|Roboto Mono"
     />
     <link
       rel="preload"
       as="style"
       onload="this.rel = 'stylesheet'"
       type="text/css"
-      href="index.css"
+      href="/player/index.css"
     />
-    <link
+    <!--     <link
       rel="preload"
       as="style"
       onload="this.rel = 'stylesheet'"
       type="text/css"
       href="index2.css"
-    />
+    /> -->
     <link
       id="favicon"
       rel="shortcut icon"
@@ -32,8 +65,12 @@
       onload="this.rel = 'stylesheet'"
       href="https://vjs.zencdn.net/7.18.1/video-js.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
     <title>LAGPlayer - Made by Glitch</title>
-    <meta name="description" content="Play your video or music without app." />
+    <meta name="description" content="Play your video or audio without app." />
     <meta name="keywords" content="LAGplayer" />
     <meta name="author" content="Mr884" />
     <meta
@@ -47,11 +84,24 @@
     />
   </head>
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-MK7JB92"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!--   External CDNs   -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="/player/jquery.min.js"></script>
     <script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
     <script src="detectmobilebrowser.js"></script>
     <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
-    <script type="module" src="https://unpkg.com/media-chrome@0.6"></script>
+<!--     <script type="module" src="https://unpkg.com/media-chrome@0.6"></script> -->
     <script
       src="https://kit.fontawesome.com/f919d403a5.js"
       crossorigin="anonymous"
@@ -62,6 +112,13 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"
+      integrity="sha512-YsR46MmyChktsyMMou+Bs74oCa/CDdwft7rJ5wlnmDzMj1mzqncsfJamEEf99Nk7IB0JpTMo5hS8rxB49FUktQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <!--   End External CDNs   -->
 
     <div id="loading">
       <img
@@ -98,10 +155,28 @@
         <p
           id="tut-volume"
           class="rainbow"
-          style="color: white; padding: 5px; font-family: Segoe UI"
+          style="color: white; padding: 5px; font-family: 'Roboto Mono', sans-serif;"
         >
           <b>Volume: 100 / 100</b>
         </p>
+      </div>
+      <div
+        id="info"
+        style="
+          position: absolute;
+          margin-right: auto;
+          margin-left: auto;
+          left: 0;
+          right: 0;
+          bottom: 3vw;
+          text-align: center;
+        "
+      >
+        <h1 style="color: red" id="song-text">No file selected!</h1>
+        <div id="mp3Timer">
+          <span id="cur" style="color: red">00:00</span> /
+          <span id="dur" style="color: red">00:00</span>
+        </div>
       </div>
       <div id="controls">
         <div
@@ -179,21 +254,20 @@
         </div>
         <div class="modal-body">
           <h3>
-            Click
             <a
               style="color: red; text-decoration: none"
               href="https://lagtube.glitch.me"
-              >here</a
+              >Simple Youtube player</a
             >
-            (simple Youtube player)
+            [STABLE]
           </h3>
           <p id="firefox">
             [Space] or scroll ROLL button: Play/pause (In fullscreen: Scroll
             anywhere)
           </p>
           <p>[M]: Mute/unmute</p>
-          <p>[F]: Enter/exit fullscreen video</p>
-          <p>[Left/Right Arrow Key]: Backward/Forward video (5 seconds)</p>
+          <p>[F]: Enter/exit fullscreen</p>
+          <p>[Left/Right Arrow Key]: Backward/Forward (5 seconds)</p>
         </div>
         <div class="modal-footer">
           <p
@@ -223,8 +297,13 @@
       onmousedown="return false;"
     >
       <div>
+        <div
+          class="glitchButton"
+          style="position: fixed; top: 20px; right: 20px"
+        ></div>
+        <script src="https://button.glitch.me/button.js"></script>
         <h1 class="rainbow" style="text-align: center">
-          <b style="cursor: default">Choose any video (or audio)</b>
+          <b style="cursor: default">Choose any audio (or video)</b>
         </h1>
         <h3 style="opacity: 50%; text-align: center">
           Blur Mode (Made by
@@ -252,17 +331,32 @@
             ></span
           >
         </p>
+        <i
+          class="fa-solid fa-rotate-left"
+          style="cursor: pointer"
+          onclick="toggleLoop()"
+        ></i
+        ><span><b id="loopText"> Loop: ON</b></span>
         <button
           id="myBtn"
           data-tooltip="Scroll this (Middle mouse)"
           data-tooltip-location="right"
           onmousewheel="settime()"
-          onmouseenter="b1(), o1()"
-          onmouseleave="b2(), o2()"
+          onmouseenter="b1()"
+          onmouseleave="b2()"
         >
           <span><b style="color: black">ROLL</b></span>
         </button>
-        <progress id="progress" max="100" value="0">Progress</progress><br />
+        <progress
+          id="progress"
+          max="100"
+          value="0"
+          style="cursor: pointer"
+          onmouseenter="b1()"
+          onmouseleave="b2()"
+        >
+          Progress</progress
+        ><br />
         <div id="o" style="position: absolute; left: 5vw">
           <span id="curtimetextbg">00:00</span> /
           <span id="durtimetextbg">00:00</span>
@@ -282,7 +376,7 @@
         </p>
       </div>
       <div style="position: absolute; bottom: 3vw; left: 1vw; right: 1vw">
-        <form style="text-align: center">
+        <form id="uploadform" style="text-align: center">
           <label for="upload" class="custom-file-upload">
             <i class="fa-solid fa-eject"></i> Choose file...
           </label>
@@ -292,7 +386,10 @@
             style="display: none"
             accept="audio/*,video/*"
           />
-          <span id="shortcut1" style="margin-left: 6px">Ctrl + O</span>
+          ||
+          <span id="shortcut1" style="margin-left: 6px"
+            ><kbd>Ctrl</kbd> + <kbd>O</kbd></span
+          >
           <a style="display: none" href="#" id="mylink" accesskey="o"
             >Click me</a
           >
@@ -329,6 +426,29 @@
       var sanssrc = document.getElementById("myVideo");
       var name = document.getElementById("upload");
       var controls = document.getElementById("controls");
+
+      function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == " ") {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+
       function settime() {
         if (video.played) console.log(video.currentTime);
         setInterval(function () {
@@ -347,6 +467,20 @@
       }
 
       progressLoop();
+
+      function silentErrorHandler() {
+        return true;
+      }
+      window.onerror = silentErrorHandler;
+
+      progress.addEventListener("click", seek);
+
+      function seek(e) {
+        let percent = e.offsetX / this.offsetWidth;
+        video.currentTime = percent * video.duration;
+        e.target.value = Math.floor(percent / 100);
+        e.target.innerHTML = progress.value + "% played";
+      }
 
       function playPageTitle() {
         newPlayTitle = "Playing!";
@@ -383,68 +517,88 @@
 
       function home() {
         location.reload(true);
+        // return false;
       }
       function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
       }
+      function playVideo() {
+        video.play();
+        btn.innerHTML = '<span><b style="color: black">ROLL (⏸️)</b></span>';
+        playPageTitle();
+        changePageTitle();
+        $("#myBtn").notify("Playing!", {
+          style: "happyblue",
+          className: "superblue",
+          position: "top center",
+        });
+        $("#myVideo").css(
+          "background-image",
+          "url('https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/7HHu.gif?v=1646408754070')"
+        );
+      }
+      function pauseVideo() {
+        video.pause();
+        btn.innerHTML = '<span><b style="color: black">ROLL (▶)</b></span>';
+        pausePageTitle();
+        changePageTitle();
+        $("#myBtn").notify("Paused!", {
+          style: "happyblue",
+          className: "superblue",
+          position: "top center",
+        });
+        $("#myVideo").css(
+          "background-image",
+          "url('https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/7HHu.png?v=1655397503815')"
+        );
+      }
+      function toggleLoop() {
+        var loopText = document.getElementById("loopText");
+        var attr = $(video).attr("loop");
+        if (typeof attr !== "undefined" && attr !== false) {
+          document.getElementsByTagName("video")[0].removeAttribute("loop");
+          loopText.innerHTML = " Loop: OFF";
+        } else {
+          document
+            .getElementsByTagName("video")[0]
+            .setAttribute("loop", "true");
+          loopText.innerHTML = " Loop: ON";
+        }
+      }
       function bpControl() {
         var name = document.getElementById("upload");
         if (video.paused) {
-          video.play();
-          btn.innerHTML = "ROLL (⏸️)";
-          playPageTitle();
-          changePageTitle();
-          $.notify("Playing!", {
-            style: "happyblue",
-            className: "superblue",
-          });
+          playVideo();
         } else {
-          video.pause();
-          btn.innerHTML = "ROLL (▶)";
-          pausePageTitle();
-          changePageTitle();
-          $.notify("Paused!", {
-            style: "happyblue",
-            className: "superblue",
-          });
+          pauseVideo();
         }
-      }
-
-      function play() {
-        var url = document.getElementById("path").value;
-        $("#src").attr("src", url);
-        document.getElementById("myVideo").load();
       }
 
       function boxplay() {
         var boxurl = prompt(
-          "Enter your url - Don't support Youtube links",
+          "[UNSTABLE] Paste clean Youtube link - Use at your own risk",
           "amogus"
         );
-        var haveSrc = src.src === ""
-        $("#src").attr("src", boxurl);
-        if (boxurl === null && src.src === "") {
+        var haveSrc = src.src === "";
+        $("#src").attr(
+          "src",
+          "https://yt.rmxgrp.dev/download?url=" + boxurl + "&format=video"
+        );
+        $("#uploadform").hide();
+        document.getElementById("myVideo").load();
+        if (boxurl === null) {
           alert("Ok!");
           return; //break out of the function early
-        } else if (boxurl === "" && src.src === "") {
+        } else if (boxurl === "") {
           alert("Ok!");
-          return;
-        } else if (boxurl === "amogus" && src.src === "") {
+        } else if (boxurl === "amogus") {
           alert("Ok amogus!");
           $("#src").attr(
             "src",
             "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20amogus_1080p.mp4?v=1649084678121"
           );
           document.getElementById("myVideo").load();
-          $("#favicon").attr(
-            "href",
-            "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/favicon.ico?v=1649085413174"
-          );
           document.title = "YOU SUS. NOW RELOAD THIS PAGE";
-          return;
-        } else if (src.src !== "") {
-          alert("Developing...");
-          return;
         }
       }
 
@@ -475,12 +629,16 @@
 
       window.addEventListener("contextmenu", (e) => {
         e.preventDefault();
-        const origin = {
-          left: e.pageX,
-          top: e.pageY,
-        };
-        setPosition(origin);
-        return false;
+        if (e.target == elem) {
+          const origin = {
+            left: e.pageX,
+            top: e.pageY,
+          };
+          setPosition(origin);
+          return false;
+        } else {
+          return;
+        }
       });
 
       function installer() {
@@ -493,14 +651,14 @@
         }
       }
       function catviz() {
-        if (video.played) video.pause();
-        btn.innerHTML = "ROLL (▶)";
+        if (video.played) pauseVideo();
         window.open(
           "https://drive.google.com/file/d/14aIYGZ_yEeiVws-0PDB7G5Qs-nWIiA-J/view?usp=sharing"
         );
       }
       function sansclick() {}
       function ytchannel() {
+        if (video.played) pauseVideo();
         window.open("https://www.youtube.com/channel/UC8Hhy9h1CJiRRajHca1BWJQ");
       }
       function currentTime() {
@@ -582,16 +740,76 @@
         if (durmins < 10) {
           durmins = "0" + durmins;
         }
+        cur.innerHTML = curmins + ":" + cursecs;
+        dur.innerHTML = durmins + ":" + dursecs;
+
         curtimetext.innerHTML = curmins + ":" + cursecs;
         durtimetext.innerHTML = durmins + ":" + dursecs;
         curtimetextbg.innerHTML = curmins + ":" + cursecs;
         durtimetextbg.innerHTML = durmins + ":" + dursecs;
       }
+
+      // MediaSession
+      if ("mediaSession" in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          // title: document.getElementById("upload").files.items(0).name,
+          // artist: curmins + ":" + cursecs + " / " + durmins + ":" + dursecs,
+          album: "LAGPlayer",
+          artwork: [
+            {
+              src: "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/logo.png?v=1655561384705",
+              sizes: "96x96",
+              type: "image/png",
+            },
+            {
+              src: "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/logo.png?v=1655561384705",
+              sizes: "128x128",
+              type: "image/png",
+            },
+            {
+              src: "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/logo.png?v=1655561384705",
+              sizes: "192x192",
+              type: "image/png",
+            },
+            {
+              src: "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/logo.png?v=1655561384705",
+              sizes: "256x256",
+              type: "image/png",
+            },
+            {
+              src: "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/logo.png?v=1655561384705",
+              sizes: "384x384",
+              type: "image/png",
+            },
+            {
+              src: "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/logo.png?v=1655561384705",
+              sizes: "512x512",
+              type: "image/png",
+            },
+          ],
+        });
+
+        navigator.mediaSession.setActionHandler("pause", () => {
+          pauseVideo();
+        });
+        navigator.mediaSession.setActionHandler("play", () => {
+          playVideo();
+        });
+        navigator.mediaSession.setActionHandler("seekbackward", (details) => {
+          video.currentTime = video.currentTime - (details.seekOffset || 5);
+        });
+        navigator.mediaSession.setActionHandler("seekforward", (details) => {
+          video.currentTime = video.currentTime + (details.seekOffset || 5);
+        });
+      }
+
       function showname() {
         var name = document.getElementById("upload");
+        var text = document.getElementById("song-text");
         $.notify("Selected file: " + name.files.item(0).name, {
           style: "happyblue",
         });
+        text.innerHTML = name.files.item(0).name;
       }
 
       function controls1() {
@@ -610,39 +828,11 @@
 
       function b1() {
         $("#key").css({ opacity: 1 });
+        $("#o").css({ opacity: 1 });
       }
       function b2() {
         $("#key").css({ opacity: 0 });
-      }
-
-      function o1() {
-        $("#o").css({ opacity: 1 });
-      }
-      function o2() {
         $("#o").css({ opacity: 0 });
-      }
-
-      function background1() {
-        document.getElementById("myVideo").style.backgroundImage =
-          "url('https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/catviz.png?v=1647951517049')"; // specify the image path here
-        document.getElementById("hint").innerText = "KNOCK KNOCK";
-        document.getElementById("hint").style.color = "orange";
-        document.getElementById("title").innerText =
-          "catviz.mp4 (Google Drive)";
-        document.getElementById("title").style.color = "orange";
-        btn.innerHTML = "KNOCK KNOCK";
-        btn.style.color = "orange";
-      }
-      function background2() {
-        document.getElementById("myVideo").style.backgroundImage =
-          "url('https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/7HHu.gif?v=1646408754070')"; // specify the image path here
-        document.getElementById("hint").innerText = "ROLL";
-        document.getElementById("hint").style.color = "pink";
-        document.getElementById("title").innerText =
-          "A simple web player with many interactive buttons and actions";
-        document.getElementById("title").style.color = "white";
-        btn.innerHTML = "ROLL";
-        btn.style.color = "black";
       }
       function text1() {
         document.getElementById("tut-volume").style.display = "unset";
@@ -677,6 +867,7 @@
       function clrMemory() {
         var videoElement = document.getElementById("myVideo");
         videoElement.pause();
+        $("#src").attr("src", URL.revokeObjectURL(files[0]));
         document.getElementById("src").removeAttribute("src"); // empty source
       }
 
@@ -739,26 +930,100 @@
         $("#src").attr("src", URL.createObjectURL(files[0]));
         document.getElementById("myVideo").load();
       }
-      
+
+      //       function checkCookie() {
+      //   let user = getCookie("username");
+      //   if (user != "") {
+      //     alert("Welcome again " + user);
+      //     myBtn.click()
+      //   } else {
+      //      user = prompt("Please enter your name:","");
+      //     myBtn.click()
+      //      if (user != "" && user != null) {
+      //        setCookie("username", user, 30);
+      //      }
+      //   }
+      // }
+      //       function deleteCookie(name) {
+      //     var d = new Date();
+      //     d.setTime(d.getTime() - (60*60*1000));
+      //     var expires = "expires=" + d.toGMTString();
+      //     document.cookie = name + "=;" + expires + ";path=/";
+      // }
+
       function firefoxLockFile() {
         if (navigator.userAgent.indexOf("Firefox") !== -1) {
           $("#upload").css("pointer-events", "none");
-          $("#upload").css("cursor", "not-allowed")
+          $("#upload").css("cursor", "not-allowed");
+        }
+      }
+
+      // Check if file input is mp4
+      function getExtension(filename) {
+        var parts = filename.split(".");
+        return parts[parts.length - 1];
+      }
+
+      function isVideo(filename) {
+        var ext = getExtension(filename);
+        switch (ext.toLowerCase()) {
+          case "m4v":
+          case "avi":
+          case "mpg":
+          case "mp4":
+            // etc
+            return true;
+        }
+        return false;
+      }
+
+      var file = $("#upload");
+      var info = $("#info");
+      function checkExtension() {
+        if (isVideo(file.val())) {
+          console.log("video");
+          $.notify("Video", {
+            showAnimation: "fadeIn",
+            showDuration: 400,
+            hideAnimation: "fadeOut",
+            position: "top left",
+            className: "info",
+            clickToHide: false,
+          });
+          info.hide();
+        } else if (!isVideo(file.val())) {
+          console.log("audio");
+          $.notify("Audio", {
+            showAnimation: "fadeIn",
+            showDuration: 400,
+            hideAnimation: "fadeOut",
+            position: "top left",
+            className: "info",
+            clickToHide: false,
+          });
+          info.show();
+          $("#myVideo").css(
+            "background-image",
+            "url('https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/7HHu.gif?v=1646408754070')"
+          );
         }
       }
 
       document
         .getElementById("upload")
+        .addEventListener("change", clrMemory, false);
+      document
+        .getElementById("upload")
         .addEventListener("change", handleFiles, false);
+      document
+        .getElementById("upload")
+        .addEventListener("change", checkExtension, false);
       document
         .getElementById("upload")
         .addEventListener("change", musicTitle, false);
       document
         .getElementById("upload")
         .addEventListener("change", showname, false);
-      document
-        .getElementById("upload")
-        .addEventListener("change", clrMemory, false);
       /* The flag that determines whether the wheel event is supported. */
       var supportsWheel = false;
 
@@ -981,10 +1246,12 @@
         const t = setTimeout(() => {
           controls.setAttribute("timer", "");
           controls.classList.add("hide-controls");
+          $("#mp3Timer").show();
         }, 1500);
         controls.setAttribute("timer", t);
 
         controls.classList.remove("hide-controls");
+        $("#mp3Timer").hide();
       });
 
       const secondsToSkip = 5;
@@ -1064,6 +1331,15 @@
 
       $(window).on("load", function () {
         $("#loading").hide();
+        if (navigator.userAgent.indexOf("Firefox") !== -1) {
+          $.notify("This player works well on Chromium based browsers", {
+            showAnimation: "fadeIn",
+            showDuration: 400,
+            hideAnimation: "fadeOut",
+            position: "top left",
+          });
+        }
+        // checkCookie();
       });
     </script>
   </body>
