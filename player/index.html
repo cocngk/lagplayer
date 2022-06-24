@@ -21,7 +21,7 @@
       if (location.protocol == "http:") location.protocol = "https:";
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker
-          .register("/player/sw.js")
+          .register("lagplayer/player/sw.js")
           .then((reg) => console.log("Service Worker registered", reg))
           .catch((err) =>
             console.error("Service Worker **not** registered", err)
@@ -32,7 +32,7 @@
     </script>
 
     <base href="/" />
-    <link rel="manifest" href="./player/manifest.json" />
+    <link rel="manifest" href="lagplayer/player/manifest.json" />
     <link rel="canonical" href="https://lagplayer.glitch.me/player" />
     <link
       rel="preload"
@@ -90,9 +90,9 @@
 
     <!--   External CDNs   -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="/player/jquery.min.js"></script>
+    <script src="lagplayer/player/jquery.min.js"></script>
     <script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
-    <script src="detectmobilebrowser.js"></script>
+    <script src="lagplayer/detectmobilebrowser.js"></script>
     <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
 <!--     <script type="module" src="https://unpkg.com/media-chrome@0.6"></script> -->
     <script
