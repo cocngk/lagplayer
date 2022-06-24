@@ -18,5 +18,5 @@
   "background_color": "pink",
   "theme_color": "pink",
   "start_url": "/player/",
-  "scope": "lagplayer/player/"
+  "scope": "/player/"
 }
