@@ -5,7 +5,7 @@
 */
 
 
-const currentVersion = 'v0.0.4.15.329732.5422';
+const currentVersion = 'v0.0.4.15.329732.6';
 
 const assets = [
   'index.html',
