@@ -4,10 +4,11 @@
  Version: 0.0.2
 */
 
-const currentVersion = 'v0.0.4.0.9.2';
+const currentVersion = 'v0.0.4.15.329732.5422';
 const assets = [
   'index.html',
   'index.css',
+  'index.js',
   'jquery.min.js'
 ];
 
