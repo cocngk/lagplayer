@@ -21,7 +21,7 @@
       if (location.protocol == "http:") location.protocol = "https:";
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker
-          .register("/player/sw.js")
+          .register("/lagplayer/player/sw.js")
           .then((reg) => console.log("Service Worker registered", reg))
           .catch((err) =>
             console.error("Service Worker **not** registered", err)
@@ -48,8 +48,8 @@
     <meta property="og:description" content="A simple web player!" />
 
     <base href="/" />
-    <link rel="manifest" href="./player/manifest.json" />
-    <link rel="canonical" href="https://lagplayer.glitch.me/player" />
+    <link rel="manifest" href="lagplayer/player/manifest.json" />
+    <link rel="canonical" href="https://cocngk.github.io/lagplayer/player/" />
     <link
       rel="preload"
       as="style"
@@ -61,7 +61,7 @@
       as="style"
       onload="this.rel = 'stylesheet'"
       type="text/css"
-      href="/player/index.css"
+      href="lagplayer/player/index.css"
     />
     <link
       id="favicon"
@@ -106,9 +106,8 @@
 
     <!--   External CDNs   -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="/player/jquery.min.js"></script>
+    <script src="lagplayer/player/jquery.min.js"></script>
     <script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
-    <!--     <script src="detectmobilebrowser.js"></script> -->
     <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"
