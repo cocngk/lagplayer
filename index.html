@@ -108,7 +108,9 @@
           "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Dance%20The%20Night%20Away%20vs%20Crab%20Rave%20TWICE%20x%20Noisestorm%20Mashup_1080p.mp4?v=1648920509150",
           "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/y2mate.com%20-%20Guys%20look%20a%20birdie%20original_1080p.mp4?v=1652707300327",
           "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/Underbase-%20Fallen%20Down.mp4?v=1655025807625",
-          "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/Cristiano%20Ronaldo%20drinking%20meme%20HD%20(full%20screen).mp4?v=1655559268288"
+          "https://cdn.glitch.global/8187eb85-ef03-4f68-a096-53cb26af1633/Cristiano%20Ronaldo%20drinking%20meme%20HD%20(full%20screen).mp4?v=1655559268288",
+          "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/The%20fumo%20of%20everything.mp4?v=1656383588457",
+          "https://cdn.glitch.me/8187eb85-ef03-4f68-a096-53cb26af1633/nelward%20-%20GHOST%20fumo%20version.mp4?v=1656385641508"
         ];
         const randomNumber = Math.floor(Math.random() * videos.length);
         const currentVideo = videos[randomNumber];
@@ -183,11 +185,11 @@
           video.duration.toFixed() - video.currentTime.toFixed();
       }
       document.getElementById("start").onclick = function () {
-        window.location.replace("https://cocngk.github.io/lagplayer/player/");
+        window.location.replace("https://lagplayer.glitch.me/player/");
       };
       video.addEventListener("ended", myHandler, false);
       function myHandler(e) {
-        window.location.replace("https://cocngk.github.io/lagplayer/player/");
+        window.location.replace("https://lagplayer.glitch.me/player/");
       }
       function off() {
         document.getElementById("overlay").style.display = "none";
